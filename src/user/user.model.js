@@ -23,11 +23,18 @@ const userSchema = new Schema(
             minLength: [8, 'Password must have at least 8 characters'],
             maxLength: [100, "Can't exceed 100 characters"]
         },
+        nit: {
+            type: String, 
+            required: [true, 'NIT is required'],
+            unique: true,
+            minLength: [8, 'Nit must have at least 8 characters'],
+            maxLength: [9, `Can't exceed 9 characters`]
+        },
         role: {
             type: String,
             required: [true, 'Role is required'],
             enum: ['ADMIN', 'CLIENT'],
-            uppercase: true //volver mayuscula
+            uppercase: true
         }
     },
     { timestamps: true }
