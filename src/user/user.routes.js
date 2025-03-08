@@ -1,45 +1,52 @@
-//Rutas de funciones de usuario
-import { Router } from 'express'
-import { 
+// user.routes.js
+import { Router } from 'express';
+import {
+    updateUserRole,
+    updateUser,
     deleteUser,
-    get, 
-    getAll, 
-    updateUser
-} from './user.controller.js'
-import { validateJwt } from '../../middlewares/validate.jwt.js'
+    updatePassword,
+    getAllUsers,
+    getPurchaseHistory
+} from './user.controller.js';
+import { validateJwt, isAdmin } from '../../middlewares/validate.jwt.js';
+import { updateUserValidator, updatePasswordValidator } from '../../helpers/validators.js';
 
-const api = Router()
+const api = Router();
 
-//Rutas privadas
-api.get(
-    '/getAll', 
+// Obtener todos los usuarios con paginación
+api.get('/all', validateJwt, getAllUsers);
+
+// Obtener el historial de compras del usuario autenticado
+api.get('/purchase-history', validateJwt, getPurchaseHistory);
+
+// Actualizar datos del usuario (excepto rol y contraseña)
+api.put('/update/:id', 
     [
-        validateJwt
+        validateJwt, 
+        updateUserValidator
     ], 
-    getAll
-)
-api.get(
-    '/:id', 
-    [
-        validateJwt
-    ], 
-    get
-)
-
-api.put(
-    '/update/:id',
-    [
-        validateJwt
-    ],
     updateUser
-)
+);
 
-api.delete(
-    '/delete/:id',
+// Actualizar rol de un usuario (solo ADMIN puede realizar esta acción)
+api.put('/update-role/:id', 
     [
-        validateJwt
-    ],
-    deleteUser
-)
+        validateJwt, 
+        isAdmin
+    ], 
+    updateUserRole
+);
 
-export default api
+// Actualizar contraseña (solo el usuario autenticado puede hacerlo)
+api.put('/update-password/:id', 
+    [
+        validateJwt, 
+        updatePasswordValidator
+    ], 
+    updatePassword
+);
+
+// Eliminar usuario (verifica si es él mismo o si es ADMIN, con restricciones)
+api.delete('/delete/:id', validateJwt, deleteUser);
+
+export default api;

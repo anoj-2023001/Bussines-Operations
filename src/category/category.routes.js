@@ -1,47 +1,28 @@
-import { Router } from 'express'
-import {
+import { Router } from 'express';
+import { 
     createCategory,
-    deleteCategory,
-    getAll,
-    updateCategory
-} from './category.controller.js'
-import { validateJwt } from '../../middlewares/validate.jwt.js'
+    getCategory,
+    getAllCategories,
+    updateCategory,
+    deleteCategory 
+} from './category.controller.js';
+import { validateJwt, isAdmin } from '../../middlewares/validate.jwt.js';
 
-const api = Router()
+const api = Router();
 
+// Crear una categoría (solo ADMIN)
+api.post('/', [validateJwt, isAdmin], createCategory);
 
-//Rutas privadas
-api.post(
-    '/CreateCategory',
-    [
-        validateJwt,
-        createCategory
-    ]
-)
+// Obtener todas las categorías (requiere autenticación)
+api.get('/', validateJwt, getAllCategories);
 
-api.put(
-    '/update/:id',
-    [
-        validateJwt,
-        updateCategory
-    ]
-)
+// Obtener una categoría por ID (requiere autenticación)
+api.get('/:id', validateJwt, getCategory);
 
-api.get(
-    '/getCategory',
-    [ 
-        validateJwt,
-        getAll
-    ]
+// Actualizar una categoría (solo ADMIN)
+api.put('/:id', [validateJwt, isAdmin], updateCategory);
 
-)
+// Eliminar una categoría (solo ADMIN)
+api.delete('/:id', [validateJwt, isAdmin], deleteCategory);
 
-api.delete(
-    '/delCategory/:id',
-    [
-        validateJwt,
-        deleteCategory
-    ]
-)
-
-export default api
+export default api;

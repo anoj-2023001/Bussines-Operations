@@ -40,7 +40,7 @@ export const isAdmin = async(req, res, next)=>{
         if(!user  || user.role !== 'ADMIN') return res.status(403).send(
             {
                 success: false,
-                message: `You dont have access | username ${user.username}`
+                message: `You dont have access | username ${user.email}`
             }
         )
         next()

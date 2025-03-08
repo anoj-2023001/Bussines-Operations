@@ -1,28 +1,30 @@
-//Model Cart
+import { Schema, model } from 'mongoose';
 
-import { schema, model } from 'mongoose';
-
-const cartSchema = new Schema(
-    {
-        name: {
-            type: String,
-            required: [true, 'Name is required'],
-            maxLength: [25, `Can't exceed 25 characters`],
-            default: 'KINAL STORE',
-            uppercase: true
-        },
-        product: {
-            type: Schema.ObjectId,
-            ref: 'Product',
-            required: [true, 'Product is required']
-        }
+const cartItemSchema = new Schema({
+    product: {
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
     },
-    { timestamps: true }
-);
+    quantity: {
+        type: Number,
+        default: 1,
+        min: [1, 'Quantity must be at least 1']
+    }
+}, { _id: false });
 
-cartSchema.methods.toJSON = function(){
+const cartSchema = new Schema({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    items: [cartItemSchema]
+}, { timestamps: true });
+
+cartSchema.methods.toJSON = function() {
     const { __v, ...cart } = this.toObject();
     return cart;
 };
 
-export default model('Cart', cartSchema)
+export default model('Cart', cartSchema);

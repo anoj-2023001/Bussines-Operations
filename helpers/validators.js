@@ -1,10 +1,10 @@
-//Validar campos en las rutas
-import { body } from "express-validator" //Capturar todo el body de la solicitud
-import { validateErrorWithoutImg } from "./validate.error.js"
-import { existEmail } from "./db.validators.js"
+// Validar campos en las rutas
+import { body } from "express-validator"; // Capturar todo el body de la solicitud
+import { validateErrorWithoutImg } from "./validate.error.js";
+import { existEmail } from "./db.validators.js";
 
 export const registerValidator = [
-    body('name', 'Name cannot be empty')
+    body('username', 'Name cannot be empty')
         .notEmpty(),
     body('email', 'Email cannot be empty or is not a valid email')
         .notEmpty()
@@ -14,8 +14,9 @@ export const registerValidator = [
         .notEmpty()
         .isStrongPassword()
         .withMessage('The password must be strong')
-        .isLength({min: 8}),
-]
+        .isLength({ min: 8 }),
+    validateErrorWithoutImg
+];
 
 export const loginValidator = [
     body('email', 'Username or email cannot be empty')
@@ -25,6 +26,27 @@ export const loginValidator = [
         .notEmpty()
         .isStrongPassword()
         .withMessage('The password must be strong')
-        .isLength({min: 8}),
-        validateErrorWithoutImg
-]
+        .isLength({ min: 8 }),
+    validateErrorWithoutImg
+];
+
+// Validación para actualizar datos del usuario (excepto contraseña y rol)
+export const updateUserValidator = [
+    body('email', 'If provided, email must be valid')
+        .optional()
+        .isEmail(),
+    body('name', 'Name must be a non-empty string')
+        .optional()
+        .notEmpty(),
+    validateErrorWithoutImg
+];
+
+// Validación para actualizar la contraseña
+export const updatePasswordValidator = [
+    body('currentPassword', 'Current password is required')
+        .notEmpty(),
+    body('newPassword', 'New password must be at least 8 characters long')
+        .notEmpty()
+        .isLength({ min: 8 }),
+    validateErrorWithoutImg
+];
